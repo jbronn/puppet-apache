@@ -1,0 +1,48 @@
+<IfModule mod_wsgi.c>
+  # This config file holds mod_wsgi configuration values which are only
+  # allowed in the 'server config' context.
+  # For a detailed description of all avaiable directives please read
+  # http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives
+<% if @socket_prefix -%>
+  WSGISocketPrefix <%= @socket_prefix %>
+<% end -%>
+<% if @import_script -%>
+  WSGIImportScript <%= @import_script %>
+<% end -%>
+<% if @case_sensitivity -%>
+  WSGICaseSensitivity <%= @case_sensitivity %>
+<% end -%>
+<% if @python_optimize -%>
+  WSGIPythonOptimize <%= @python_optimize %>
+<% end -%>
+<% if @python_executable -%>
+  WSGIPythonExecutable <%= @python_executable %>
+<% end -%>
+<% if @python_home -%>
+  WSGIPythonHome <%= @python_home %>
+<% end -%>
+<% if @python_path -%>
+  WSGIPythonPath <%= @python_path %>
+<% end -%>
+<% if @python_eggs -%>
+  WSGIPythonEggs <%= @python_eggs %>
+<% end -%>
+<% if @restrict_embedded -%>
+  WSGIRestrictEmbedded <%= @restrict_embedded %>
+<% end -%>
+<% if @restrict_stdin -%>
+  WSGIRestrictStdin <%= @restrict_stdin %>
+<% end -%>
+<% if @restrict_stdout -%>
+  WSGIRestrictStdout <%= @restrict_stdout %>
+<% end -%>
+<% if @restrict_signal -%>
+  WSGIRestrictSignal <%= @restrict_signal %>
+<% end -%>
+<% if @accept_mutex -%>
+  WSGIAcceptMutex <%= @accept_mutex %>
+<% end -%>
+<% if @lazy_initialization -%>
+  WSGILazyInitialization <%= @lazy_initialization %>
+<% end -%>
+</IfModule>

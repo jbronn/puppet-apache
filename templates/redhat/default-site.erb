@@ -1,0 +1,12 @@
+<VirtualHost *:80>
+    ServerAdmin root@localhost
+
+    DocumentRoot "<%= scope.lookupvar('apache::params::document_root') %>"
+    <Directory "<%= scope.lookupvar('apache::params::document_root') %>">
+        Options Indexes FollowSymLinks
+        AllowOverride None
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+</VirtualHost>
