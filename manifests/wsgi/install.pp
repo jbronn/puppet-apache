@@ -10,12 +10,12 @@ class apache::wsgi::install {
       # `mod_wsgi` package only on EPEL.
       include sys::redhat::epel
       $wsgi_require = [ Class['apache::install'],
-                        Class['python::install'],
+                        Class['python'],
                         Class['sys::redhat::epel']  ]
 
     } else {
       $wsgi_require = [ Class['apache::install'],
-                        Class['python::install'] ]
+                        Class['python'] ]
     }
 
     # If the OS has a packaged version, use it.
