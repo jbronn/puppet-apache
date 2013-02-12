@@ -15,7 +15,9 @@ class apache::params {
       $modules       = '/usr/apache2/2.2/libexec'
       $provider      = 'pkg'
       $user          = 'webservd'
+      $uid           = '80'
       $group         = $user
+      $gid           = $gid
       $restart       = true
       $service       = 'svc:/network/http:apache22'
       $pid           = '/var/run/apache2/2.2/httpd.pid'
@@ -32,7 +34,9 @@ class apache::params {
       $modules       = '/usr/lib/apache2/modules'
       $devel         = 'apache2-prefork-dev'
       $user          = 'www-data'
+      $uid           = '33'
       $group         = $user
+      $gid           = $gid
       $restart       = false
       $service       = 'apache2'
       $pid           = '/var/run/apache2.pid'
@@ -52,7 +56,9 @@ class apache::params {
       $devel         = 'httpd-devel'
       $ssl_package   = 'mod_ssl'
       $user          = 'apache'
+      $uid           = '48'
       $group         = $user
+      $gid           = $uid
       $restart       = true
       $service       = 'httpd'
       $pid           = '/var/run/httpd/httpd.pid'
