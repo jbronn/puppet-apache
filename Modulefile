@@ -1,7 +1,7 @@
 name    'counsyl-apache'
 version '1.0.0'
 source 'git://github.counsyl.com/justin/counsyl-apache.git'
-author 'counsyl'
+author 'Counsyl, Inc.'
 license 'Apache License, Version 2.0'
 summary 'Installs the Apache 2 web server'
 description 'Installs the Apache 2 web server'
