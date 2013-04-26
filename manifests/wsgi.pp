@@ -68,6 +68,7 @@ class apache::wsgi(
   $template            = 'apache/wsgi/wsgi.conf.erb',
   $accept_mutex        = undef,
   $case_sensitivity    = undef,
+  $daemon_process      = undef,
   $import_script       = undef,
   $lazy_initialization = undef,
   $python_eggs         = undef,

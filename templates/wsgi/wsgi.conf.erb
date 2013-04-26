@@ -3,6 +3,9 @@
   # allowed in the 'server config' context.
   # For a detailed description of all avaiable directives please read
   # http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives
+<% if @daemon_process -%>
+  WSGIDaemonProcess <%= @daemon_process %>
+<% end -%>
 <% if @socket_prefix -%>
   WSGISocketPrefix <%= @socket_prefix %>
 <% end -%>
