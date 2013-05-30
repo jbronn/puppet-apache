@@ -1,7 +1,7 @@
 apache
 ======
 
-This module installs the Apache 2 web server.
+This Puppet module installs the Apache 2 web server.
 
 License
 -------
@@ -16,4 +16,4 @@ Justin Bronn <justin@counsyl.com>
 Support
 -------
 
-Please log tickets and issues at https://github.counsyl.com/justin/counsyl-apache
+Please log tickets and issues at https://github.counsyl.com/dev/puppet-apache
