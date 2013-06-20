@@ -7,10 +7,6 @@
 # For more information on the configuration parameters in this module consult:
 # http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives
 #
-# [*version*]
-#  Sets the ensure parameter for the package resource used to
-#  install mod_wsgi.  Defaults to `installed`.
-#
 # [*template*]
 #  The template used to generate the Apache module configuration file
 #  for mod_wsgi.  Defaults to 'apache/wsgi/wsgi.conf.erb'.
@@ -64,7 +60,6 @@
 #   include apache::wsgi
 #
 class apache::wsgi(
-  $version             = 'installed',
   $template            = 'apache/wsgi/wsgi.conf.erb',
   $accept_mutex        = undef,
   $case_sensitivity    = undef,
@@ -82,6 +77,7 @@ class apache::wsgi(
   $restrict_stdout     = undef,
   $socket_prefix       = undef,
 ) {
+  include apache::params
   include apache::wsgi::install
 
   # Ensure WSGI module configuration files are present, with any
@@ -89,6 +85,7 @@ class apache::wsgi(
   apache::mod { 'wsgi':
     require => Class['apache::wsgi::install'],
     content => template($template),
+    notify  => Service[$apache::params::service],
   }
 
   # Ensure mod_wsgi is enabled.
