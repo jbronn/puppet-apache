@@ -26,13 +26,13 @@ class apache::params {
     }
     debian: {
       $apachectl     = '/usr/sbin/apache2ctl'
-      $package       = 'apache2-mpm-prefork'
+      $package       = 'apache2-mpm-worker'
       $config_root   = '/etc/apache2'
       $server_root   = $config_root
       $config        = "${config_root}/apache2.conf"
       $config_dir    = "${config_root}/conf.d"
       $modules       = '/usr/lib/apache2/modules'
-      $devel         = 'apache2-prefork-dev'
+      $devel         = 'apache2-threaded-dev'
       $user          = 'www-data'
       $uid           = '33'
       $group         = $user
