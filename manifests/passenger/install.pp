@@ -9,9 +9,9 @@ class apache::passenger::install {
   include apache::passenger::build
 
   exec { 'install-passenger-module':
-    path      => ['/usr/bin', '/bin'],
+    path      => ['/usr/bin', '/bin', '/usr/local/bin'],
     command   => 'passenger-install-apache2-module -a',
-    unless    => "test -f ${ruby::passenger::root}/ext/apache2/mod_passenger.so",
+    creates   => $ruby::passenger::apache_module,
     subscribe => Package['passenger'],
     require   => [Class['apache::passenger::build'],
                   Class['apache::install'],

@@ -1,1 +1,1 @@
-LoadModule passenger_module <%= scope.lookupvar('ruby::passenger::root') %>/ext/apache2/mod_passenger.so
+LoadModule passenger_module <%= scope.lookupvar('ruby::passenger::apache_module') %>
