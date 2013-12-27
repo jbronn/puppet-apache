@@ -7,15 +7,18 @@ class apache::passenger::install {
   include apache::devel
   include ruby::passenger
   include apache::passenger::build
+  include sys
 
   exec { 'install-passenger-module':
-    path      => ['/usr/bin', '/bin', '/usr/local/bin'],
-    command   => 'passenger-install-apache2-module -a',
-    creates   => $ruby::passenger::apache_module,
-    subscribe => Package['passenger'],
-    require   => [Class['apache::passenger::build'],
-                  Class['apache::install'],
-                  Class['apache::devel'],
-                  Package['passenger']],
+    command     => 'passenger-install-apache2-module -a',
+    creates     => $ruby::passenger::apache_module,
+    path        => ['/usr/bin', '/bin', '/usr/local/bin'],
+    user        => 'root',
+    environment => ["HOME=${sys::root_home}"],
+    subscribe   => Package['passenger'],
+    require     => [Class['apache::passenger::build'],
+                    Class['apache::install'],
+                    Class['apache::devel'],
+                    Package['passenger']],
   }
 }
