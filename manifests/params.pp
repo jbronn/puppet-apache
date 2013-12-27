@@ -17,7 +17,7 @@ class apache::params {
       $user          = 'webservd'
       $uid           = '80'
       $group         = $user
-      $gid           = $gid
+      $gid           = $uid
       $restart       = true
       $service       = 'svc:/network/http:apache22'
       $pid           = '/var/run/apache2/2.2/httpd.pid'
@@ -36,7 +36,7 @@ class apache::params {
       $user          = 'www-data'
       $uid           = '33'
       $group         = $user
-      $gid           = $gid
+      $gid           = $uid
       $restart       = false
       $service       = 'apache2'
       $pid           = '/var/run/apache2.pid'
