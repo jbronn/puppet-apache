@@ -97,9 +97,9 @@ class apache::wsgi(
     if $::osfamily == RedHat {
       # `mod_wsgi` package only on EPEL.
       include sys::redhat::epel
-      $wsgi_require = Class['apache', 'python', 'sys::redhat::epel']
+      $wsgi_require = Class['apache::install', 'python', 'sys::redhat::epel']
     } else {
-      $wsgi_require = Class['apache', 'python']
+      $wsgi_require = Class['apache::install', 'python']
     }
 
     # If the OS has a packaged version, use it.
