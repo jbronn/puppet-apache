@@ -2,14 +2,14 @@
 #
 # Manages the Apache service.
 #
-class apache::service {
-  include apache::params
-  service { $apache::params::service:
-    ensure     => running,
-    alias      => 'apache',
-    enable     => true,
-    hasstatus  => true,
-    hasrestart => $apache::params::restart,
-    require    => Class['apache::install'],
+class apache::service(
+  $service = $apache::params::service,
+  $ensure  = 'running',
+  $enable  = true,
+) inherits apache::params {
+  service { $service:
+    ensure => $ensure,
+    enable => $enable,
+    alias  => 'apache',
   }
 }
