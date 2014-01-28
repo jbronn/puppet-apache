@@ -4,15 +4,21 @@
 #
 # === Examples
 #
-#  class { 'apache': }
+#  include apache
 #
 # === Authors
 #
 # Justin Bronn <justin@counsyl.com>
 #
 class apache {
-  include apache::params
   include apache::install
-  include apache::service
   include apache::config
+  include apache::service
+
+  # Use anchors to ensure proper class dependency order.
+  anchor { 'apache::start': } ->
+  Class['apache::install']    ->
+  Class['apache::config']     ->
+  Class['apache::service']    ->
+  anchor { 'apache::end': }
 }
