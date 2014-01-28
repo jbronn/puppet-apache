@@ -2,26 +2,15 @@
 #
 # Sets up directories and files related to Apache's configuration.
 #
-class apache::config {
-  include apache::params
-
-  # Resource default for the Apache configuration files.
-  if $::operatingsystem == Solaris {
-    $group = 'bin'
-  } else {
-    $group = 'root'
-  }
-
-  File {
-    owner   => 'root',
-    group   => $group,
-    mode    => '0644',
-    require => Class['apache::install'],
-  }
+class apache::config inherits apache::params {
+  include sys
 
   file { 'apache-security':
     ensure => file,
-    path   => "${apache::params::config_dir}/security.conf",
+    path   => "${config_dir}/security.conf",
+    owner  => 'root',
+    group  => $sys::root_group,
+    mode   => '0644',
     source => 'puppet:///modules/apache/security.conf',
     notify => Service['apache'],
   }
@@ -30,29 +19,45 @@ class apache::config {
   # want to ensure they exist on other platforms as well.
   file { 'apache-sites-available':
     ensure => directory,
-    path   => $apache::params::sites_available,
+    path   => $sites_available,
+    owner  => 'root',
+    group  => $sys::root_group,
+    mode   => '0644',
   }
 
   file { 'apache-sites-enabled':
     ensure => directory,
-    path   => $apache::params::sites_enabled,
+    path   => $sites_enabled,
+    owner  => 'root',
+    group  => $sys::root_group,
+    mode   => '0644',
   }
 
   file { 'apache-mods-available':
     ensure => directory,
-    path   => $apache::params::mods_available,
+    path   => $mods_available,
+    owner  => 'root',
+    group  => $sys::root_group,
+    mode   => '0644',
   }
 
   file { 'apache-mods-enabled':
     ensure => directory,
-    path   => $apache::params::mods_enabled,
+    path   => $mods_enabled,
+    owner  => 'root',
+    group  => $sys::root_group,
+    mode   => '0644',
   }
 
   # Customize the configuration file layout, depending on
   # the operating system.
   case $::osfamily {
     debian: {
-      include apache::ubuntu
+      # We use our own `security.conf`, so remove Ubuntu's.
+      file { "${config_dir}/security":
+        ensure => absent,
+        notify => Service['apache'],
+      }
     }
     redhat: {
       include apache::redhat
