@@ -7,6 +7,17 @@
 # For more information on the configuration parameters in this module consult:
 # http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives
 #
+# [*package*]
+#  The package to install mod_wsgi from, the default is platform dependent.
+#  Set to false to build from source.
+#
+# [*base_url*]
+#  The base URL when building from source, must end in a trailing slash.
+#  Defaults to: 'http://modwsgi.googlecode.com/files/'.
+#
+# [*source_version*]
+#  When installing from source, the version to use.  Defaults to '3.4'.
+#
 # [*template*]
 #  The template used to generate the Apache module configuration file
 #  for mod_wsgi.  Defaults to 'apache/wsgi/wsgi.conf.erb'.
@@ -60,6 +71,9 @@
 #   include apache::wsgi
 #
 class apache::wsgi(
+  $package             = $apache::params::wsgi,
+  $base_url            = 'http://modwsgi.googlecode.com/files/',
+  $source_version      = '3.4',
   $template            = 'apache/wsgi/wsgi.conf.erb',
   $accept_mutex        = undef,
   $case_sensitivity    = undef,
@@ -76,16 +90,68 @@ class apache::wsgi(
   $restrict_stdin      = undef,
   $restrict_stdout     = undef,
   $socket_prefix       = undef,
-) {
-  include apache::params
-  include apache::wsgi::install
+) inherits apache::params {
+  include apache
+  include python
+  if $package {
+    if $::osfamily == RedHat {
+      # `mod_wsgi` package only on EPEL.
+      include sys::redhat::epel
+      $wsgi_require = Class['apache::install', 'python', 'sys::redhat::epel']
+    } else {
+      $wsgi_require = Class['apache::install', 'python']
+    }
+
+    # If the OS has a packaged version, use it.
+    package { $package:
+      ensure   => installed,
+      alias    => 'mod_wsgi',
+      provider => $provider,
+      require  => $wsgi_require
+    }
+
+    $mod_require = Package[$wsgi]
+  } else {
+    # Otherwise, we try and install from source.
+    include apache::devel
+    include python::devel
+
+    $wsgi_name    = "mod_wsgi-${source_version}"
+    $wsgi_dir     = "/root/${wsgi_name}"
+    $tarball      = "${wsgi_name}.tar.gz"
+    $download_url = "${base_url}${tarball}"
+    $build_path   = ['/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/local/bin']
+
+    sys::fetch { 'download-mod_wsgi':
+      destination => "/root/${tarball}",
+      source      => $download_url,
+    }
+
+    exec { 'extract-mod_wsgi':
+      command => "tar xzf ${tarball}",
+      cwd     => '/root',
+      path    => $build_path,
+      creates => $wsgi_dir,
+      require => Sys::Fetch['download-mod_wsgi'],
+    }
+
+    exec { 'install-mod_wsgi':
+      command => "${wsgi_dir}/configure && make && make install",
+      cwd     => $wsgi_dir,
+      path    => $build_path,
+      creates => "${modules}/mod_wsgi.so",
+      require => [Exec['extract-mod_wsgi'],
+                  Class['apache::devel', 'python::devel']],
+    }
+
+    $mod_require = Exec['install-mod_wsgi']
+  }
 
   # Ensure WSGI module configuration files are present, with any
   # customizations requested by the user.
   apache::mod { 'wsgi':
-    require => Class['apache::wsgi::install'],
     content => template($template),
-    notify  => Service[$apache::params::service],
+    require => $mod_require,
   }
 
   # Ensure mod_wsgi is enabled.

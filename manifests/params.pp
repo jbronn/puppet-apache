@@ -18,7 +18,6 @@ class apache::params {
       $uid           = '80'
       $group         = $user
       $gid           = $uid
-      $restart       = true
       $service       = 'svc:/network/http:apache22'
       $pid           = '/var/run/apache2/2.2/httpd.pid'
       $document_root = '/var/apache2/2.2/htdocs'
@@ -37,7 +36,6 @@ class apache::params {
       $uid           = '33'
       $group         = $user
       $gid           = $uid
-      $restart       = false
       $service       = 'apache2'
       $pid           = '/var/run/apache2.pid'
       $document_root = '/var/www'
@@ -59,7 +57,6 @@ class apache::params {
       $uid           = '48'
       $group         = $user
       $gid           = $uid
-      $restart       = true
       $service       = 'httpd'
       $pid           = '/var/run/httpd/httpd.pid'
       $document_root = '/var/www/html'

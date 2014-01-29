@@ -2,13 +2,15 @@
 #
 # This class installs Apache development libraries
 #
-class apache::devel {
-  include apache::params
-  if $apache::params::devel {
-    package { $apache::params::devel:
+class apache::devel(
+  $package  = $apache::params::devel,
+  $provider = $apache::params::provider,
+) inherits apache::params {
+  if $package {
+    package { $package:
       ensure   => installed,
       alias    => 'apache-devel',
-      provider => $apache::params::provider,
+      provider => $provider,
     }
   }
 }

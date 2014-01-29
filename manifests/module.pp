@@ -4,33 +4,42 @@
 # `a2enmod/a2dismod` on Debian/Ubuntu platforms, or by ensuring the
 # correct files/links are present on other platforms.
 #
-define apache::module($ensure='present') {
-
+# === Parameters:
+#
+# [*ensure*]
+#  Ensure value for this site, defaults to 'present'.  Valid values are:
+#  'enabled', 'present', 'absent', or 'disabled'.
+#
+define apache::module(
+  $ensure = 'present'
+) {
   $ensure_values = ['enabled', 'present', 'absent', 'disabled']
   if ! ($ensure in $ensure_values) {
-    fail("Invalid `apache::module` ensure value: ${ensure}.\n")
+    fail("Invalid `apache::module` ensure value.\n")
   }
 
+  # Shortcut to the module directories.
+  include apache::params
   $mods_available = $apache::params::mods_available
   $mods_enabled = $apache::params::mods_enabled
 
   case $::osfamily {
     debian: {
       case $ensure {
-        enabled, present: {
+        'enabled', 'present': {
           exec { "a2enmod ${name}":
             path    => ['/usr/bin', '/usr/sbin', '/bin', '/sbin'],
             unless  => "test -h ${mods_enabled}/${name}.load",
-            require => Class['apache::install'],
             notify  => Service['apache'],
+            require => Class['apache::config'],
           }
         }
-        disabled, absent: {
+        'disabled', 'absent': {
           exec { "a2dismod ${name}":
             path    => ['/usr/bin', '/usr/sbin', '/bin', '/sbin'],
             unless  => "test ! -h ${mods_enabled}/${name}.load",
-            require => Class['apache::install'],
             notify  => Service['apache'],
+            require => Class['apache::config'],
           }
         }
       }
@@ -38,28 +47,30 @@ define apache::module($ensure='present') {
     redhat: {
       # XXX: Find a way to this without files.
       case $ensure {
-        enabled, present: {
+        'enabled', 'present': {
           file { "${mods_enabled}/${name}.load":
             ensure  => link,
             target  => "${mods_available}/${name}.load",
-            require => File[$mods_enabled],
             notify  => Service['apache'],
+            require => Class['apache::config'],
           }
           file { "${mods_enabled}/${name}.conf":
             ensure  => link,
             target  => "${mods_available}/${name}.conf",
-            require => File[$mods_available],
             notify  => Service['apache'],
+            require => Class['apache::config'],
           }
         }
-        disabled, absent: {
+        'disabled', 'absent': {
           file { "${mods_enabled}/${name}.load":
-            ensure => absent,
-            notify => Service['apache'],
+            ensure  => absent,
+            notify  => Service['apache'],
+            require => Class['apache::config'],
           }
           file { "${mods_enabled}/${name}.conf":
-            ensure => absent,
-            notify => Service['apache'],
+            ensure  => absent,
+            notify  => Service['apache'],
+            require => Class['apache::config'],
           }
         }
       }
