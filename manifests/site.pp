@@ -53,7 +53,9 @@ define apache::site(
   $sites_available = $apache::params::sites_available
   $sites_enabled = $apache::params::sites_enabled
 
-  if ($content or $source) {
+  if ($content and $source) {
+    fail("Cannot provide both file content and source for site.\n")
+  } elsif ($content or $source) {
     $site = "${sites_available}/${name}"
     file { $site:
       ensure  => file,
@@ -66,8 +68,6 @@ define apache::site(
       require => Class['apache::config'],
     }
     $site_require = File[$site]
-  } elsif ($content and $source) {
-    fail("Cannot provide both file content and source for site.\n")
   } else {
     $site = false
     $site_require = Class['apache::config']
