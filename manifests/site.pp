@@ -62,6 +62,7 @@ define apache::site(
       mode    => $mode,
       content => $content,
       source  => $source,
+      notify  => Service['apache'],
       require => Class['apache::config'],
     }
     $site_require = File[$site]
