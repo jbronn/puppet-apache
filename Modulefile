@@ -1,5 +1,5 @@
 name    'counsyl-apache'
-version '0.9.0'
+version '0.9.1'
 source  'git://github.counsyl.com/dev/puppet-apache.git'
 author  'Counsyl, Inc.'
 license 'Apache License, Version 2.0'
@@ -7,4 +7,4 @@ summary 'Installs the Apache 2 web server'
 description 'Installs the Apache 2 web server'
 project_page 'https://github.counsyl.com/dev/puppet-apache'
 
-dependency 'counsyl/sys', '>= 0.9.9'
+dependency 'counsyl/sys', '>= 0.9.11'
