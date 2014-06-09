@@ -30,7 +30,7 @@ define apache::module(
           exec { "a2enmod ${name}":
             path    => ['/usr/bin', '/usr/sbin', '/bin', '/sbin'],
             unless  => "test -h ${mods_enabled}/${name}.load",
-            notify  => Service['apache'],
+            notify  => Service[$apache::params::service],
             require => Class['apache::config'],
           }
         }
@@ -38,7 +38,7 @@ define apache::module(
           exec { "a2dismod ${name}":
             path    => ['/usr/bin', '/usr/sbin', '/bin', '/sbin'],
             unless  => "test ! -h ${mods_enabled}/${name}.load",
-            notify  => Service['apache'],
+            notify  => Service[$apache::params::service],
             require => Class['apache::config'],
           }
         }
@@ -51,25 +51,21 @@ define apache::module(
           file { "${mods_enabled}/${name}.load":
             ensure  => link,
             target  => "${mods_available}/${name}.load",
-            notify  => Service['apache'],
+            notify  => Service[$apache::params::service],
             require => Class['apache::config'],
           }
           file { "${mods_enabled}/${name}.conf":
             ensure  => link,
             target  => "${mods_available}/${name}.conf",
-            notify  => Service['apache'],
+            notify  => Service[$apache::params::service],
             require => Class['apache::config'],
           }
         }
         'disabled', 'absent': {
-          file { "${mods_enabled}/${name}.load":
+          file { ["${mods_enabled}/${name}.load",
+                  "${mods_enabled}/${name}.conf"]:
             ensure  => absent,
-            notify  => Service['apache'],
-            require => Class['apache::config'],
-          }
-          file { "${mods_enabled}/${name}.conf":
-            ensure  => absent,
-            notify  => Service['apache'],
+            notify  => Service[$apache::params::service],
             require => Class['apache::config'],
           }
         }

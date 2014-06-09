@@ -5,10 +5,11 @@
 # === Parameters
 #
 # [*max_age*]
-#   The maximum header age, in seconds, to use with HSTS.  Defaults to '600'.
+#   The maximum header age, in seconds, to use with HSTS.  Defaults to
+#  '15768000' (6 months).
 #
 class apache::hsts(
-  $max_age = '600',
+  $max_age = '15768000',
 ) inherits apache::params {
   include apache
   include sys
@@ -17,20 +18,25 @@ class apache::hsts(
     # (which does not yet work on Solaris).
     $hsts_require = Class['apache::install']
   } else {
-    # HSTS requires `mod_headers`.
-    apache::module { 'headers':
-      ensure => present,
-    }
-    $hsts_require = Apache::Module['headers']
+    include apache::headers
+    $hsts_require = Class['apache::headers']
   }
 
-  file { "${config_dir}/hsts.conf":
+  $hsts_conf = "${config_dir}/hsts.conf"
+  file { $hsts_conf:
     owner   => 'root',
     group   => $sys::root_group,
     mode    => '0644',
     content => "# Enables HTTP Strict Transport Security (HSTS).
 Header always set Strict-Transport-Security \"max-age=${max_age}; includeSubDomains\"\n",
-    notify  => Service['apache'],
+    notify  => Service[$service],
     require => $hsts_require,
+  }
+
+  if $conf_suffix {
+    file { "${conf_enabled}/hsts.conf":
+      ensure => link,
+      target => $hsts_conf,
+    }
   }
 }

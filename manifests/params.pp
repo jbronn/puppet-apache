@@ -24,12 +24,27 @@ class apache::params {
       $logs          = '/var/apache2/2.2/logs'
     }
     debian: {
+      $config_root   = '/etc/apache2'
+      if $::operatingsystem == 'Ubuntu' {
+        $lsb_compare = '14'
+      } else {
+        $lsb_compare = '7'
+      }
+
+      if versioncmp($::lsbmajdistrelease, $lsb_compare) >= 0 {
+        $conf_suffix = true
+        $conf_available = "${config_root}/conf-available"
+        $conf_enabled   = "${config_root}/conf-enabled"
+        $config_dir  = $conf_available
+      } else {
+        $conf_suffix = false
+        $config_dir  = "${config_root}/conf.d"
+      }
+
       $apachectl     = '/usr/sbin/apache2ctl'
       $package       = 'apache2-mpm-worker'
-      $config_root   = '/etc/apache2'
       $server_root   = $config_root
       $config        = "${config_root}/apache2.conf"
-      $config_dir    = "${config_root}/conf.d"
       $modules       = '/usr/lib/apache2/modules'
       $devel         = 'apache2-threaded-dev'
       $user          = 'www-data'

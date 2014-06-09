@@ -53,10 +53,16 @@ define apache::site(
   $sites_available = $apache::params::sites_available
   $sites_enabled = $apache::params::sites_enabled
 
+  if $apache::params::conf_suffix {
+    $site_name = "${name}.conf"
+  } else {
+    $site_name = $name
+  }
+
   if ($content and $source) {
     fail("Cannot provide both file content and source for site.\n")
   } elsif ($content or $source) {
-    $site = "${sites_available}/${name}"
+    $site = "${sites_available}/${site_name}"
     file { $site:
       ensure  => file,
       owner   => $owner,
@@ -64,7 +70,7 @@ define apache::site(
       mode    => $mode,
       content => $content,
       source  => $source,
-      notify  => Service['apache'],
+      notify  => Service[$apache::params::service],
       require => Class['apache::config'],
     }
     $site_require = File[$site]
@@ -75,28 +81,37 @@ define apache::site(
 
   case $::osfamily {
     debian: {
-      # Special handling for Debian's 'default' site as it has a
-      # '000-' prefix that's different from its name.
+      # Special handling for Debian's 'default' site as it has a '000-' prefix
+      # that's different from it's name.  In addition, older versions of the
+      # a2ensite/a2dissite scripts would map 'default' to this, while newer
+      # versions require the name with a prefix.
       if $name == 'default' {
-        $site_link = "${sites_enabled}/000-default"
+        if $apache::params::conf_suffix {
+          $exec_name = '000-default'
+          $site_link = "${sites_enabled}/000-default.conf"
+        } else {
+          $exec_name = 'default'
+          $site_link = "${sites_enabled}/000-default"
+        }
       } else {
-        $site_link = "${sites_enabled}/${name}"
+        $exec_name = $name
+        $site_link = "${sites_enabled}/${site_name}"
       }
 
       case $ensure {
         'enabled', 'present': {
-          exec { "a2ensite ${name}":
+          exec { "a2ensite ${exec_name}":
             path    => ['/usr/bin', '/usr/sbin', '/bin'],
             unless  => "test -h ${site_link}",
-            notify  => Service['apache'],
+            notify  => Service[$apache::params::service],
             require => $site_require,
           }
         }
         'disabled', 'absent': {
-          exec { "a2dissite ${name}":
+          exec { "a2dissite ${exec_name}":
             path    => ['/usr/bin', '/usr/sbin', '/bin'],
             unless  => "test ! -h ${site_link}",
-            notify  => Service['apache'],
+            notify  => Service[$apache::params::service],
             require => $site_require,
           }
         }
@@ -105,17 +120,17 @@ define apache::site(
     redhat: {
       case $ensure {
         'enabled', 'present': {
-          file { "${sites_enabled}/${name}":
+          file { "${sites_enabled}/${site_name}":
             ensure  => link,
-            target  => "${sites_available}/${name}",
-            notify  => Service['apache'],
+            target  => "${sites_available}/${site_name}",
+            notify  => Service[$apache::params::service],
             require => $site_require,
           }
         }
         'disabled', 'absent': {
-          file { "${sites_enabled}/${name}":
+          file { "${sites_enabled}/${site_name}":
             ensure  => absent,
-            notify  => Service['apache'],
+            notify  => Service[$apache::params::service],
             require => $site_require,
           }
         }

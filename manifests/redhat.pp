@@ -39,7 +39,7 @@ class apache::redhat::config {
     path    => $apache::params::config,
     content => template('apache/redhat/httpd.conf.erb'),
     require => Class['apache::config'],
-    notify  => Service['apache'],
+    notify  => Service[$apache::params::service],
   }
 
   file { "${apache::params::server_root}/conf/ports.conf":
@@ -54,7 +54,7 @@ class apache::redhat::config {
     command => "bash -c 'for mod in ${redhat_enabled}; do ln -s ${apache::params::mods_available}/\${mod}.{load,conf} ${apache::params::mods_enabled}; done' && touch ${apache::params::mods_enabled}/.defaults",
     creates => "${apache::params::mods_enabled}/.defaults",
     require => Class['apache::redhat::default_modules'],
-    notify  => Service['apache'],
+    notify  => Service[$apache::params::service],
   }
 }
 
@@ -66,7 +66,7 @@ class apache::redhat::firewall {
     command => "${table_http} && ${table_https} && iptables-save > /etc/sysconfig/iptables && touch /root/.apache_firewall",
     creates => "/root/.apache_firewall",
     require => Class['apache::install'],
-    notify  => Service['apache'],
+    notify  => Service[$apache::params::service],
   }
 }
 
