@@ -36,9 +36,11 @@ class apache::params {
         $conf_available = "${config_root}/conf-available"
         $conf_enabled   = "${config_root}/conf-enabled"
         $config_dir  = $conf_available
+        $devel       = 'apache2-dev'
       } else {
         $conf_suffix = false
         $config_dir  = "${config_root}/conf.d"
+        $devel       = 'apache2-threaded-dev'
       }
 
       $apachectl     = '/usr/sbin/apache2ctl'
@@ -46,7 +48,6 @@ class apache::params {
       $server_root   = $config_root
       $config        = "${config_root}/apache2.conf"
       $modules       = '/usr/lib/apache2/modules'
-      $devel         = 'apache2-threaded-dev'
       $user          = 'www-data'
       $uid           = '33'
       $group         = $user
