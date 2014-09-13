@@ -31,7 +31,11 @@ class apache::params {
         $lsb_compare = '7'
       }
 
-      if versioncmp($::lsbmajdistrelease, $lsb_compare) >= 0 {
+      # Facter 2.2+ changed lsbmajdistrelease fact, e.g., now returns
+      # '12.04' instead of '12' for Ubuntu precise.
+      $lsb_major_release = regsubst($::lsbmajdistrelease, '^(\d+).*', '\1')
+
+      if versioncmp($lsb_major_release, $lsb_compare) >= 0 {
         $conf_suffix = true
         $conf_available = "${config_root}/conf-available"
         $conf_enabled   = "${config_root}/conf-enabled"
