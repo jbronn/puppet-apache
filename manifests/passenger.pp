@@ -24,54 +24,32 @@
 #  Passenger.  Defaults to 'apache/passenger/passenger.conf.erb'.
 #
 class apache::passenger(
+  $install_type       = 'gem',
   $max_pool_size      = '6',
   $max_requests       = undef,
   $pool_idle_time     = undef,
   $stat_throttle_rate = undef,
   $template           = 'apache/passenger/passenger.conf.erb',
 ) inherits apache::params {
-  include apache
-  include apache::devel
-  include ruby::passenger
-  include ruby::devel
-  include sys
-  include sys::gcc
-
-  case $::osfamily {
-    debian: {
-      $dev_packages = ['libcurl4-openssl-dev', 'libssl-dev', 'zlib1g-dev']
-    }
-    redhat: {
-      $dev_packages = ['libcurl-devel', 'openssl-devel', 'zlib-devel']
+  case $install_type {
+    'apt': {
+      include apache::passenger::apt
+      $module_path = "${modules}/mod_passenger.so"
+      $passenger_root = '/usr/lib/ruby/vendor_ruby/phusion_passenger/locations.ini'
+      Class['apache::passenger::apt'] -> Apache::Mod['passenger']
     }
     default: {
-      fail("Don't know how to install Phusion Passenger for Apache on: ${::osfamily}.\n")
+      include apache::passenger::gem
+      $module_path = $ruby::passenger::apache_module
+      $passenger_root = $ruby::passenger::path
+      Class['apache::passenger::gem'] -> Apache::Mod['passenger']
     }
-  }
-
-  # Libraries necessary to compile Passenger.
-  package { $dev_packages:
-    ensure  => installed,
-    require => Class['sys::gcc', 'ruby::devel'],
-  }
-
-  # Compile and install passenger for Apache.
-  exec { 'install-passenger-module':
-    command     => 'passenger-install-apache2-module -a',
-    creates     => $ruby::passenger::apache_module,
-    path        => ['/usr/bin', '/bin', '/usr/local/bin'],
-    user        => 'root',
-    environment => ["HOME=${sys::root_home}"],
-    subscribe   => Class['ruby::passenger'],
-    require     => [Class['apache::config', 'apache::devel'],
-                    Package[$dev_packages]],
   }
 
   # Create Apache Passenger module loading and configuration files.
   apache::mod { 'passenger':
     content => template($template),
-    path    => $ruby::passenger::apache_module,
-    require => Exec['install-passenger-module'],
+    path    => $module_path,
   }
 
   # Enable Apache passenger module.
