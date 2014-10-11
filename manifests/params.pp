@@ -61,6 +61,7 @@ class apache::params {
       $document_root = '/var/www'
       $logs          = '/var/log/apache2'
       $auth_kerb     = 'libapache2-mod-auth-kerb'
+      $passenger     = 'libapache2-mod-passenger'
       $wsgi          = 'libapache2-mod-wsgi'
     }
     redhat: {

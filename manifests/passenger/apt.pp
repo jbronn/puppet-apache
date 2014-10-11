@@ -4,8 +4,8 @@
 #
 class apache::passenger::apt(
   $ensure  = 'installed',
-  $package = 'libapache2-mod-passenger',
-) {
+  $package = $apache::params::passenger,
+) inherits apache::params {
   include apache
   package { $package:
     ensure  => $ensure,

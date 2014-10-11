@@ -7,6 +7,11 @@
 # See the Phusion Passenger configuration documentation for more information
 # on these tunable parameters.
 #
+# [*install_type*]
+#  How to install Phusion Passenger, defaults to 'gem'.  May be set to 'apt'
+#  for Debian platforms (which eliminates need to compile passenger's apache
+#  module from source.
+#
 # [*max_pool_size*]
 #  Defaults to 6.
 #
@@ -38,11 +43,14 @@ class apache::passenger(
       $passenger_root = '/usr/lib/ruby/vendor_ruby/phusion_passenger/locations.ini'
       Class['apache::passenger::apt'] -> Apache::Mod['passenger']
     }
-    default: {
+    'gem': {
       include apache::passenger::gem
       $module_path = $ruby::passenger::apache_module
       $passenger_root = $ruby::passenger::path
       Class['apache::passenger::gem'] -> Apache::Mod['passenger']
+    }
+    default: {
+      fail("Invalid installation type.\n")
     }
   }
 
