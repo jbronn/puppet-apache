@@ -1,12 +1,9 @@
 <IfModule mod_passenger.c>
-  PassengerRoot <%= scope.lookupvar('ruby::passenger::root') %>
+  PassengerRoot <%= @passenger_root %>
   PassengerRuby /usr/bin/ruby
   # Recommended Passenger Configuration
   PassengerHighPerformance on
-<%# PassengerUseGlobalQueue deprecated in Passenger 4 and above. -%>
-<% if scope.lookupvar('ruby::passenger::version').start_with? '3' -%>
-  PassengerUseGlobalQueue on
-<% end -%>
+
   # PassengerMaxPoolSize control number of application instances,
   # typically 1.5x the number of processor cores.
   PassengerMaxPoolSize <%= @max_pool_size %>
