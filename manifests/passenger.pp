@@ -46,7 +46,7 @@ class apache::passenger(
     'gem': {
       include apache::passenger::gem
       $module_path = $ruby::passenger::apache_module
-      $passenger_root = $ruby::passenger::path
+      $passenger_root = $ruby::passenger::root
       Class['apache::passenger::gem'] -> Apache::Mod['passenger']
     }
     default: {
