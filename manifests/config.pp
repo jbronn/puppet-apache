@@ -7,12 +7,12 @@ class apache::config inherits apache::params {
 
   $apache_security = "${config_dir}/security.conf"
   file { $apache_security:
-    ensure => file,
-    owner  => 'root',
-    group  => $sys::root_group,
-    mode   => '0644',
-    source => 'puppet:///modules/apache/security.conf',
-    notify => Service[$service],
+    ensure  => file,
+    owner   => 'root',
+    group   => $sys::root_group,
+    mode    => '0644',
+    content => template('apache/security.conf.erb'),
+    notify  => Service[$service],
   }
 
   # These directories are included by default on Ubuntu; we
