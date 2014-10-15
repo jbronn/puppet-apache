@@ -22,6 +22,7 @@ class apache::params {
       $pid           = '/var/run/apache2/2.2/httpd.pid'
       $document_root = '/var/apache2/2.2/htdocs'
       $logs          = '/var/apache2/2.2/logs'
+      $version       = '2.2'
     }
     debian: {
       $config_root   = '/etc/apache2'
@@ -41,10 +42,12 @@ class apache::params {
         $conf_enabled   = "${config_root}/conf-enabled"
         $config_dir  = $conf_available
         $devel       = 'apache2-dev'
+        $version     = '2.4'
       } else {
         $conf_suffix = false
         $config_dir  = "${config_root}/conf.d"
         $devel       = 'apache2-threaded-dev'
+        $version     = '2.2'
       }
 
       $apachectl     = '/usr/sbin/apache2ctl'
@@ -84,6 +87,7 @@ class apache::params {
       $logs          = '/var/log/httpd'
       $auth_kerb     = 'mod_auth_kerb' # from EPEL
       $wsgi          = 'mod_wsgi' # from EPEL
+      $version       = '2.2'
     }
     default: {
       fail("Do not know how to install Apache on ${::osfamily}.\n")

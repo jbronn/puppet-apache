@@ -3,12 +3,20 @@
 # are explicitly allowed later.
 #
 <Directory />
-           AllowOverride None
-           Order Deny,Allow
-           Deny from all
+<%
+ # Apache 2.4+ changed the way that access control restrictions are set, see:
+ # http://httpd.apache.org/docs/2.4/upgrading.html#access
+-%>
+<% if scope.function_versioncmp([@version, '2.4']) >= 0 -%>
+  Require all denied
+<% else -%>
+  AllowOverride None
+  Order deny,allow
+  Deny from all
+<% end -%>
 </Directory>
 
-# 
+#
 # Set to one of:  Full | OS | Minimal | Minor | Major | Prod
 # where Full conveys the most information, and Prod the least.
 #
