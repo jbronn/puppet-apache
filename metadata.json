@@ -1,6 +1,6 @@
 {
   "name": "counsyl-apache",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "author": "Counsyl, Inc.",
   "summary": "Installs the Apache 2 web server",
   "license": "Apache License, Version 2.0",
